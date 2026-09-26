@@ -38,7 +38,7 @@ src/ stage1.py 最小 RAG：向量化 + 检索 stage2_extract.py PDF -> 文本 s
 pip install -r requirements.txt
 python src/stage3_build_index.py   # 建索引（跑一次）
 python src/stage3_search.py        # 检索
-复制
+
 
 写完提交：
 
