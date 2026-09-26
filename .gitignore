@@ -1,0 +1,15 @@
+.venv/
+venv/
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 数据：年报 PDF 几十 MB，不该公开分发
+data/
+!data/.gitkeep
+
+# 模型缓存
+.cache/
+*.bin
+*.safetensors
