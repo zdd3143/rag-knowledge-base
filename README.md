@@ -31,3 +31,18 @@ Python · sentence-transformers (BGE-M3) · PyMuPDF · numpy
 - [ ] 阶段 8：API 服务 + 演示界面
 
 ## 目录结构
+src/ stage1.py 最小 RAG：向量化 + 检索 stage2_extract.py PDF -> 文本 stage2_chunk.py 文本 -> 分块
+## 运行
+
+```bash
+pip install -r requirements.txt
+python src/stage3_build_index.py   # 建索引（跑一次）
+python src/stage3_search.py        # 检索
+复制
+
+写完提交：
+
+```powershell
+git add .
+git commit -m "补 README：说明项目定位、动机与进度"
+git push
