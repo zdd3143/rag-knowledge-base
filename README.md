@@ -31,7 +31,13 @@ Python · sentence-transformers (BGE-M3) · PyMuPDF · numpy
 - [ ] 阶段 8：API 服务 + 演示界面
 
 ## 目录结构
-src/ stage1.py 最小 RAG：向量化 + 检索 stage2_extract.py PDF -> 文本 stage2_chunk.py 文本 -> 分块
+
+```
+src/
+  stage1.py           最小 RAG：向量化 + 检索
+  stage2_extract.py   PDF -> 文本
+  stage2_chunk.py     文本 -> 分块
+```
 ## 运行
 
 ```bash
