@@ -10,8 +10,7 @@ docs = [
     "支撑剂的作用是防止压裂后的裂缝重新闭合。",
   ]
 
-
-
+docs.append(open("data/text/中国石油2023年年度报告.txt", encoding="utf-8").read())
 
 model = SentenceTransformer("BAAI/bge-m3")
 
