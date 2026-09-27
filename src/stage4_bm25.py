@@ -5,6 +5,16 @@ from collections import Counter, defaultdict
 
 import jieba
 
+ # 加领域词 
+DOMAIN_WORDS = [
+        "中国石油", "中国石化", "中国海油", "中海油服", "海油工程",
+        "营业收入", "营业总收入", "净利润", "归母净利润", "利润总额",
+        "资产负债率", "毛利率", "经营活动现金流量净额", "每股收益",
+        "原油产量", "天然气产量", "油气当量", "探明储量", "资本开支",
+    ]
+for _word in DOMAIN_WORDS:
+    jieba.add_word(_word)
+   
 
 class BM25:
     def __init__(self, corpus, k1=1.5, b=0.75):
@@ -59,17 +69,7 @@ if __name__ == "__main__":
     chunks = json.loads(Path("index/chunks.json").read_text(encoding="utf-8"))
     texts = [c["text"] for c in chunks]
 
-    # 加领域词 
-    DOMAIN_WORDS = [
-        "中国石油", "中国石化", "中国海油", "中海油服", "海油工程",
-        "营业收入", "营业总收入", "净利润", "归母净利润", "利润总额",
-        "资产负债率", "毛利率", "经营活动现金流量净额", "每股收益",
-        "原油产量", "天然气产量", "油气当量", "探明储量", "资本开支",
-    ]
-    for word in DOMAIN_WORDS:
-        jieba.add_word(word)
-    print(f"已加入 {len(DOMAIN_WORDS)} 个领域词")
-
+   
     #建索引
     print(f"建立 BM25 索引：{len(texts)} 块")
     bm25 = BM25(texts)
