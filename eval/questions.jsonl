@@ -1,0 +1,38 @@
+{"id": "q001", "category": "factual", "question": "中国石油2023年的营业收入是多少？", "anchors": ["30,110.12"]}
+{"id": "q002", "category": "factual", "question": "中国石油2023年归属于母公司股东的净利润是多少？", "anchors": ["1,611.46"]}
+{"id": "q003", "category": "factual", "question": "中国石油2023年的自由现金流是多少？", "anchors": ["1,761.22"]}
+{"id": "q004", "category": "factual", "question": "中国石油2023年经营活动产生的现金流量净额是多少？", "anchors": ["4,565.96"]}
+{"id": "q005", "category": "factual", "question": "中国石油2023年的资本性支出是多少？", "anchors": ["2,753.38"]}
+{"id": "q006", "category": "factual", "question": "中国石油2023年的经营利润是多少？", "anchors": ["2,354.66"]}
+{"id": "q007", "category": "factual", "question": "2023年末中国石油拥有的现金及现金等价物是多少？", "anchors": ["2,490.01"]}
+{"id": "q008", "category": "factual", "question": "2023年中国石油国内销售天然气多少亿立方米？", "anchors": ["2,197.57"]}
+{"id": "q009", "category": "factual", "question": "中国石油2023年的经营支出是多少？", "anchors": ["27,755.46"]}
+{"id": "q010", "category": "factual", "question": "按中国企业会计准则计算，中国石油2023年的净利润是多少？", "anchors": ["1,802.91"]}
+{"id": "q011", "category": "factual", "question": "2023年中国石油油气和新能源分部的营业收入是多少？", "anchors": ["8,923.35"]}
+{"id": "q012", "category": "factual", "question": "2023年中国石油销售分部的营业收入是多少？", "anchors": ["25,270.59"]}
+{"id": "q013", "category": "factual", "question": "中国石油2023年除所得税外的其他税赋是多少？", "anchors": ["2,962.26"]}
+{"id": "q014", "category": "factual", "question": "2023年度中国石油与中国石油集团之间的产品销售交易金额是多少？", "anchors": ["1,585.45"]}
+{"id": "q015", "category": "factual", "question": "中国石油2024年的营业收入是多少？", "anchors": ["29,379.81"]}
+{"id": "q016", "category": "factual", "question": "中国石油2024年经营活动产生的现金流量净额是多少？", "anchors": ["4,065.32"]}
+{"id": "q017", "category": "factual", "question": "中国石油2024年归属于母公司股东的净利润是多少？", "anchors": ["1,646.84"]}
+{"id": "q018", "category": "factual", "question": "2024年末中国石油母公司股东权益总额是多少？", "anchors": ["15,151.32"]}
+{"id": "q019", "category": "multi_hop", "question": "中国石油2023年和2024年的营业收入分别是多少？", "anchors": ["30,110.12", "29,379.81"]}
+{"id": "q020", "category": "multi_hop", "question": "2023年中国石油销售分部和油气和新能源分部的营业收入分别是多少？", "anchors": ["25,270.59", "8,923.35"]}
+{"id": "q021", "category": "multi_hop", "question": "中国石油2023年和2024年归属于母公司股东的净利润分别是多少？", "anchors": ["1,611.46", "1,646.84"]}
+{"id": "q022", "category": "multi_hop", "question": "中国石油2023年和2024年经营活动产生的现金流量净额分别是多少？", "anchors": ["4,565.96", "4,065.32"]}
+{"id": "q023", "category": "multi_hop", "question": "中国石油2023年的资本性支出和年末现金及现金等价物分别是多少？", "anchors": ["2,753.38", "2,490.01"]}
+{"id": "q024", "category": "multi_hop", "question": "2023年和2024年中国石油国内销售天然气分别是多少亿立方米？", "anchors": ["2,197.57", "2,278.33"]}
+{"id": "q025", "category": "unanswerable", "question": "西南石油大学的校训是什么？", "anchors": []}
+{"id": "q026", "category": "unanswerable", "question": "量子纠缠的贝尔不等式怎么验证？", "anchors": []}
+{"id": "q027", "category": "unanswerable", "question": "中国石油2030年的营业收入是多少？", "anchors": []}
+{"id": "q028", "category": "unanswerable", "question": "中国石化的营业收入是多少？", "anchors": []}
+{"id": "q029", "category": "unanswerable", "question": "中国海油2023年的净利润是多少？", "anchors": []}
+{"id": "q030", "category": "unanswerable", "question": "中国石油2023年新入职员工的人数是多少？", "anchors": []}
+{"id": "q031", "category": "paraphrase", "question": "中国石油2023年的营收规模有多大？", "anchors": ["30,110.12"]}
+{"id": "q032", "category": "paraphrase", "question": "2023年中国石油给母公司股东赚了多少利润？", "anchors": ["1,611.46"]}
+{"id": "q033", "category": "paraphrase", "question": "2023年中国石油在投资上花了多少钱？", "anchors": ["2,753.38"]}
+{"id": "q034", "category": "paraphrase", "question": "2023年中国石油靠日常经营实际收回了多少现金？", "anchors": ["4,565.96"]}
+{"id": "q035", "category": "paraphrase", "question": "到2023年底，中国石油账上还剩多少现金？", "anchors": ["2,490.01"]}
+{"id": "q036", "category": "paraphrase", "question": "2023年中国石油可以自由支配的现金有多少？", "anchors": ["1,761.22"]}
+{"id": "q037", "category": "paraphrase", "question": "2023年中国石油维持日常经营的总开销是多少？", "anchors": ["27,755.46"]}
+{"id": "q038", "category": "paraphrase", "question": "2023年中国石油卖出去的天然气一共多少亿立方米？", "anchors": ["2,735.48"]}
