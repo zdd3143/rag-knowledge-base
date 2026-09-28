@@ -21,3 +21,6 @@ data/
 .cache/
 *.bin
 *.safetensors
+
+# 临时下载目录（CUDA 轮子等大文件）
+tmp/

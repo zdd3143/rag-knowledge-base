@@ -3,3 +3,5 @@ pymupdf
 numpy
 jieba
 requests
+fastapi
+uvicorn
