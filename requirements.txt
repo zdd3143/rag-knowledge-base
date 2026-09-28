@@ -2,3 +2,4 @@ sentence-transformers
 pymupdf
 numpy
 jieba
+requests

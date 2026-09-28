@@ -1,6 +1,8 @@
 .venv/
 venv/
 index/
+.env
+
 # Python 缓存
 __pycache__/
 *.pyc
