@@ -1,0 +1,6 @@
+# 启动
+cd D:\AAA\rag-learn
+.\.venv\Scripts\Activate.ps1
+uvicorn stage8_api:app --app-dir src --host 127.0.0.1 --port 8000
+
+# 关闭：在那个终端按 Ctrl+C

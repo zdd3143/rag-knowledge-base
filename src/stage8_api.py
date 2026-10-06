@@ -14,6 +14,12 @@ from sentence_transformers import CrossEncoder, SentenceTransformer
 
 from stage4_bm25 import BM25
 from stage6_generate import SYSTEM_PROMPT, load_env
+from stage9_production import MeteredLLM, QueryCache, RetryPolicy
+
+#: 检索配置指纹 —— 一旦改动检索逻辑，务必同步改这里。
+#: 它会被拼进缓存 key，**保证"换了检索配置之后旧缓存自动失效"**。
+#: 忘了改的后果是：返回旧配置下的答案，而且完全看不出来（静默错误）。
+RETRIEVAL_FINGERPRINT = "topk=5|bge-m3|rrf:vec0.3+bm25_0.7|rerank:v2-m3"
 
 # 全局状态：服务启动时填充，所有请求共享
 STATE: dict = {}
@@ -37,7 +43,23 @@ async def lifespan(app: FastAPI):
     STATE["bm25"] = BM25(STATE["texts"])
     STATE["reranker"] = CrossEncoder("BAAI/bge-reranker-v2-m3")
     STATE["api_key"] = os.environ.get("DEEPSEEK_API_KEY", "")
-    print("[启动] 服务就绪")
+
+    # ---------- 生产化的三件事（阶段 9）----------
+    #  ① 成本可观测  ② 查询缓存  ③ 重试与降级
+    #  它们做成可插拔的中间件，检索逻辑一行没动。
+    #
+    #  ⭐ 缓存 key 里绑定了【检索配置指纹】：
+    #     改了权重/模型/top_k 而忘记清缓存 → 指纹变了 → 缓存自动失效。
+    #     这比"记得手动清"可靠 —— 把可能的静默错误变成不会发生。
+    STATE["cache"] = QueryCache(maxsize=500, ttl_seconds=3600,
+                                config_fingerprint=RETRIEVAL_FINGERPRINT)
+    STATE["llm"] = MeteredLLM(
+        STATE["api_key"],
+        cache=STATE["cache"],
+        policy=RetryPolicy(max_attempts=3, base_delay=1.0),
+    ) if STATE["api_key"] else None
+
+    print(f"[启动] 服务就绪（缓存指纹 {RETRIEVAL_FINGERPRINT[:24]}…）")
 
     yield
 
@@ -142,9 +164,15 @@ def search(q: Query):
 
 @app.post("/ask")
 def ask(q: Query):
-    """完整问答：检索 + 生成 + 引用溯源。会调用 DeepSeek（要花钱、更慢）。"""
+    """完整问答：检索 + 生成 + 引用溯源。
+
+    ⭐ 相比最初的版本，这里换成了阶段 9 的 MeteredLLM ——
+    一次调用就同时获得：缓存、重试降级、token 计量。
+    接口签名和返回结构基本没变，**说明中间件是真正的可插拔**。
+    """
     _ensure_ready()
-    if not STATE["api_key"]:
+    llm: MeteredLLM | None = STATE.get("llm")
+    if llm is None:
         raise HTTPException(500, "未配置 DEEPSEEK_API_KEY")
 
     hits = retrieve(q.question, q.top_k)
@@ -152,29 +180,25 @@ def ask(q: Query):
         f"[{i}] {' '.join(STATE['texts'][d].split())}"
         for i, (d, _) in enumerate(hits, start=1)
     )
+    user_prompt = f"【参考资料】\n{context}\n\n【问题】\n{q.question}"
 
-    resp = requests.post(
-        "https://api.deepseek.com/v1/chat/completions",
-        headers={"Authorization": f"Bearer {STATE['api_key']}"},
-        json={
-            "model": "deepseek-chat",
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user",
-                 "content": f"【参考资料】\n{context}\n\n【问题】\n{q.question}"},
-            ],
-            "temperature": 0.1,
-            "max_tokens": 1024,
-        },
-        timeout=120,
-    )
-    resp.raise_for_status()
-    answer = resp.json()["choices"][0]["message"]["content"].strip()
+    r = llm.ask(q.question, SYSTEM_PROMPT, user_prompt)
+    answer = r["answer"]
 
     used = sorted({int(n) for n in re.findall(r"\[(\d{1,2})\]", answer)})
     return {
         "answer": answer,
         "refused": "无法回答" in answer,
+        # ---- 工程化元信息：一次问答花了多少钱、有没有走缓存、重试过几次 ----
+        "meta": {
+            "from_cache": r["from_cache"],
+            "degraded": r.get("degraded", False),
+            "cost_yuan": r["cost_yuan"],
+            "prompt_tokens": r.get("prompt_tokens", 0),
+            "completion_tokens": r.get("completion_tokens", 0),
+            "latency_ms": r.get("latency_ms", 0),
+            "attempts": r.get("attempts", 1),
+        },
         "retrieved": [
             {"rank": i, "chunk_id": d, "score": round(s, 4),
              "text": STATE["texts"][d]}
@@ -185,6 +209,43 @@ def ask(q: Query):
             for n in used if 1 <= n <= len(hits)
         ],
     }
+
+
+# ---------------------------------------------------------------- 可观测
+
+@app.get("/metrics")
+def metrics():
+    """成本与健康度指标。
+
+    ⭐ 为什么这个接口重要：
+        企业里 RAG 服务上线后，最常被问的三个问题是
+            「一个月花多少钱？」「缓存有用吗？」「模型服务稳不稳？」
+        没有这个接口，就只能靠猜。
+
+    ⚠️ 注意 `saved_yuan_estimate` 是**估算值** ——
+       用「已发生的平均单次成本 × 命中次数」推的。
+       被缓存的问题本来会花多少，无法反事实测量。
+       对外汇报时要说清这是 estimate。
+    """
+    llm: MeteredLLM | None = STATE.get("llm")
+    cache: QueryCache | None = STATE.get("cache")
+    if llm is None:
+        return {"status": "no_api_key", "cache": {
+            "size": cache.size if cache else 0}}
+    m = llm.metrics()
+    m["status"] = "ok"
+    m["retrieval_fingerprint"] = RETRIEVAL_FINGERPRINT
+    return m
+
+
+@app.post("/cache/clear")
+def cache_clear():
+    """手动清缓存 —— 改了提示词但要保留检索配置时用得上。"""
+    cache: QueryCache | None = STATE.get("cache")
+    if cache is None:
+        raise HTTPException(503, "缓存未初始化")
+    cache.clear()
+    return {"ok": True, "size": cache.size}
 
 
 # ---------------------------------------------------------------- 演示页面

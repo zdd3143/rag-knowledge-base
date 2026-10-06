@@ -1,7 +1,31 @@
-sentence-transformers
-pymupdf
-numpy
-jieba
-requests
-fastapi
-uvicorn
+# ============================================================
+# 从零实现的 RAG 检索系统 · 依赖
+# ============================================================
+# 安装：
+#   pip install -r requirements.txt
+#
+# 实测版本（Windows / Python 3.12）
+#   sentence-transformers  6.1.0
+#   fastapi                0.141.1
+#   numpy / jieba / pymupdf / requests / uvicorn
+# ============================================================
+
+# ---- 核心（阶段 1~9 都用得到）----
+sentence-transformers     # BGE-M3 向量化 + bge-reranker-v2-m3 重排
+pymupdf                   # PDF 解析（阶段 2）
+numpy                     # 索引矩阵化运算（阶段 3 提速 325 倍）
+jieba                     # 中文分词（手写 BM25 用，阶段 4）
+requests                  # 调 DeepSeek API
+fastapi                   # HTTP 服务（阶段 8）
+uvicorn                   # ASGI server
+
+# ---- 可选：LangChain 对照版（阶段 10）----
+# 不装也能跑完阶段 1~9；装了才能跑 stage10_langchain_rag.py
+#
+#   pip install langchain langchain-openai langchain-community langchain-text-splitters
+#
+# 实测：langchain 1.4.2 / langchain-core 1.6.5 / langchain-community 0.4.2
+#
+# ⚠️ 想用 LangChain 自带的 BM25Retriever 还需要 rank_bm25 —— 本项目没装，
+#    因为检索层我保留了自己调优过的加权融合（理由见 README）。
+#    pip install rank_bm25
